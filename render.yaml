@@ -10,7 +10,7 @@ services:
       export PATH="$HOME/.node/corepack/pnpm/8.15.0/bin:$PATH"
       pnpm install
       cd packages/database && pnpm prisma generate && cd ../..
-      pnpm build
+      pnpm --filter=worker... build
     startCommand: node apps/worker/dist/index.js
     envVars:
       - key: NODE_ENV
