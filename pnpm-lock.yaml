@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      turbo:
+        specifier: ^1.12.4
+        version: 1.13.4
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
@@ -14,12 +21,6 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.6.2
-      turbo:
-        specifier: ^1.12.4
-        version: 1.13.4
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
 
   apps/web:
     dependencies:
@@ -35,6 +36,9 @@ importers:
       '@farcaster-scheduler/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@types/node':
+        specifier: ^20
+        version: 20.19.24
       next:
         specifier: ^14.1.0
         version: 14.2.33(react-dom@18.3.1)(react@18.3.1)
@@ -44,10 +48,10 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
     devDependencies:
-      '@types/node':
-        specifier: ^20
-        version: 20.19.24
       '@types/react':
         specifier: ^18
         version: 18.3.26
@@ -69,9 +73,6 @@ importers:
       tailwindcss:
         specifier: ^3.3.0
         version: 3.4.18
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
 
   apps/worker:
     dependencies:
@@ -87,25 +88,25 @@ importers:
       '@farcaster-scheduler/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@types/node':
+        specifier: ^20
+        version: 20.19.24
       cron:
         specifier: ^3.1.6
         version: 3.5.0
       dotenv:
         specifier: ^16.4.1
         version: 16.6.1
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
     devDependencies:
       '@types/cron':
         specifier: ^2.4.0
         version: 2.4.3
-      '@types/node':
-        specifier: ^20
-        version: 20.19.24
       tsx:
         specifier: ^4.7.0
         version: 4.20.6
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
 
   packages/config: {}
 
@@ -120,7 +121,6 @@ importers:
       '@farcaster-scheduler/types':
         specifier: workspace:*
         version: link:../types
-    devDependencies:
       '@types/node':
         specifier: ^20
         version: 20.19.24
@@ -130,13 +130,12 @@ importers:
 
   packages/database:
     dependencies:
-      '@prisma/client':
-        specifier: ^5.9.1
-        version: 5.22.0(prisma@5.22.0)
-    devDependencies:
       '@farcaster-scheduler/types':
         specifier: workspace:*
         version: link:../types
+      '@prisma/client':
+        specifier: ^5.9.1
+        version: 5.22.0(prisma@5.22.0)
       '@types/node':
         specifier: ^20
         version: 20.19.24
@@ -149,13 +148,12 @@ importers:
 
   packages/farcaster:
     dependencies:
-      '@neynar/nodejs-sdk':
-        specifier: ^1.35.0
-        version: 1.71.0(@types/node@20.19.24)(typescript@5.9.3)
-    devDependencies:
       '@farcaster-scheduler/types':
         specifier: workspace:*
         version: link:../types
+      '@neynar/nodejs-sdk':
+        specifier: ^1.35.0
+        version: 1.71.0(@types/node@20.19.24)(typescript@5.9.3)
       '@types/node':
         specifier: ^20
         version: 20.19.24
@@ -164,7 +162,7 @@ importers:
         version: 5.9.3
 
   packages/types:
-    devDependencies:
+    dependencies:
       '@types/node':
         specifier: ^20
         version: 20.19.24
@@ -1086,9 +1084,11 @@ packages:
 
   /@prisma/debug@5.22.0:
     resolution: {integrity: sha512-AUt44v3YJeggO2ZU5BkXI7M4hu9BF2zzH2iF2V5pyXT/lRTyWiElZ7It+bRH1EshoMRxHgpYg4VB6rCM+mG5jQ==}
+    dev: false
 
   /@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2:
     resolution: {integrity: sha512-2PTmxFR2yHW/eB3uqWtcgRcgAbG1rwG9ZriSvQw+nnb7c4uCr3RAcGMb6/zfE88SKlC1Nj2ziUvc96Z379mHgQ==}
+    dev: false
 
   /@prisma/engines@5.22.0:
     resolution: {integrity: sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA==}
@@ -1098,6 +1098,7 @@ packages:
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/fetch-engine': 5.22.0
       '@prisma/get-platform': 5.22.0
+    dev: false
 
   /@prisma/fetch-engine@5.22.0:
     resolution: {integrity: sha512-bkrD/Mc2fSvkQBV5EpoFcZ87AvOgDxbG99488a5cexp5Ccny+UM6MAe/UFkUC0wLYD9+9befNOqGiIJhhq+HbA==}
@@ -1105,11 +1106,13 @@ packages:
       '@prisma/debug': 5.22.0
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/get-platform': 5.22.0
+    dev: false
 
   /@prisma/get-platform@5.22.0:
     resolution: {integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==}
     dependencies:
       '@prisma/debug': 5.22.0
+    dev: false
 
   /@rtsao/scc@1.1.0:
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -4183,6 +4186,7 @@ packages:
       '@prisma/engines': 5.22.0
     optionalDependencies:
       fsevents: 2.3.3
+    dev: false
 
   /prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -4896,7 +4900,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-darwin-arm64@1.13.4:
@@ -4904,7 +4908,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-linux-64@1.13.4:
@@ -4912,7 +4916,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-linux-arm64@1.13.4:
@@ -4920,7 +4924,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-windows-64@1.13.4:
@@ -4928,7 +4932,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-windows-arm64@1.13.4:
@@ -4936,7 +4940,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo@1.13.4:
@@ -4949,7 +4953,7 @@ packages:
       turbo-linux-arm64: 1.13.4
       turbo-windows-64: 1.13.4
       turbo-windows-arm64: 1.13.4
-    dev: true
+    dev: false
 
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}

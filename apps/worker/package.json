@@ -15,13 +15,13 @@
     "@farcaster-scheduler/database": "workspace:*",
     "@farcaster-scheduler/farcaster": "workspace:*",
     "@farcaster-scheduler/types": "workspace:*",
+    "@types/node": "^20",
     "cron": "^3.1.6",
-    "dotenv": "^16.4.1"
+    "dotenv": "^16.4.1",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@types/cron": "^2.4.0",
-    "@types/node": "^20",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.7.0"
   }
 }

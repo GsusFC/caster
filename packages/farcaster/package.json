@@ -15,10 +15,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@neynar/nodejs-sdk": "^1.35.0"
-  },
-  "devDependencies": {
     "@farcaster-scheduler/types": "workspace:*",
+    "@neynar/nodejs-sdk": "^1.35.0",
     "@types/node": "^20",
     "typescript": "^5.3.3"
   }
