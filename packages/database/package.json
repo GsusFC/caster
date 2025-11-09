@@ -1,0 +1,29 @@
+{
+  "name": "@farcaster-scheduler/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Database layer with Prisma ORM",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.1"
+  },
+  "devDependencies": {
+    "@farcaster-scheduler/types": "workspace:*",
+    "prisma": "^5.9.1",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "farcaster-dev": {
+    "triggers": [
+      "neynar",
+      "farcaster",
+      "cast",
+      "signer",
+      "publish",
+      "schedule",
+      "frame"
+    ],
+    "paths": [
+      "packages/farcaster/**",
+      "packages/core/**",
+      "apps/worker/**"
+    ],
+    "description": "Farcaster & Neynar development patterns"
+  },
+  "database-dev": {
+    "triggers": [
+      "prisma",
+      "database",
+      "migration",
+      "repository",
+      "schema",
+      "query"
+    ],
+    "paths": [
+      "packages/database/**",
+      "**/prisma/**"
+    ],
+    "description": "Database and Prisma ORM patterns"
+  },
+  "monorepo-patterns": {
+    "triggers": [
+      "monorepo",
+      "turborepo",
+      "workspace",
+      "package",
+      "dependency"
+    ],
+    "paths": [
+      "package.json",
+      "turbo.json",
+      "pnpm-workspace.yaml",
+      "packages/**/package.json"
+    ],
+    "description": "Monorepo architecture and workflows"
+  },
+  "nextjs-dev": {
+    "triggers": [
+      "next",
+      "react",
+      "component",
+      "route",
+      "api",
+      "server action",
+      "middleware"
+    ],
+    "paths": [
+      "apps/web/**"
+    ],
+    "description": "Next.js 14 development patterns"
+  }
+}

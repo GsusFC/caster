@@ -1,0 +1,12 @@
+{
+  "name": "@farcaster-scheduler/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared configuration for ESLint, TypeScript, Tailwind",
+  "main": "index.js",
+  "files": [
+    "eslint",
+    "typescript",
+    "tailwind"
+  ]
+}

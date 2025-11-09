@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  fid           Int      @unique
+  username      String
+  displayName   String?
+  pfpUrl        String?
+  signerUuid    String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  scheduledCasts ScheduledCast[]
+  threads        CastThread[]
+
+  @@index([fid])
+  @@index([signerUuid])
+}
+
+model ScheduledCast {
+  id            String      @id @default(cuid())
+  userId        String
+  content       String
+  mediaUrls     String[]
+  channelKey    String?
+  scheduledTime DateTime
+  publishedAt   DateTime?
+  status        CastStatus  @default(PENDING)
+  priority      CastPriority @default(NORMAL)
+  castHash      String?
+  errorMessage  String?
+  retryCount    Int         @default(0)
+  threadId      String?
+  threadOrder   Int?        // Order within thread (0-indexed)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread        CastThread? @relation(fields: [threadId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status, scheduledTime])
+  @@index([threadId])
+}
+
+model CastThread {
+  id            String      @id @default(cuid())
+  userId        String
+  status        CastStatus  @default(PENDING)
+  scheduledTime DateTime
+  publishedAt   DateTime?
+  errorMessage  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  casts         ScheduledCast[]
+
+  @@index([userId])
+  @@index([status, scheduledTime])
+}
+
+enum CastStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum CastPriority {
+  LOW
+  NORMAL
+  HIGH
+}

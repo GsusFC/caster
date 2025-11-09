@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "userPromptSubmit": [
+      {
+        "command": "node",
+        "args": [".claude/hooks/skill-activation-prompt.js"]
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "bash",
+        "args": [".claude/hooks/post-tool-use-tracker.sh"]
+      }
+    ]
+  },
+  "mcpServers": {},
+  "skillsDirectory": ".claude/skills",
+  "commandsDirectory": ".claude/commands",
+  "agentsDirectory": ".claude/agents"
+}
