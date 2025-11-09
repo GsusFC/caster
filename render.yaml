@@ -5,8 +5,13 @@ services:
     env: node
     region: oregon
     plan: starter
-    buildCommand: cd apps/worker && pnpm install && pnpm build
-    startCommand: cd apps/worker && pnpm start
+    buildCommand: |
+      corepack enable
+      corepack prepare pnpm@8.15.0 --activate
+      pnpm install
+      pnpm --filter=worker build
+      pnpm --filter=database prisma generate
+    startCommand: node apps/worker/dist/index.js
     envVars:
       - key: NODE_ENV
         value: production
