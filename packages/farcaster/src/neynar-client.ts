@@ -27,7 +27,7 @@ export async function publishCast(
       text,
       {
         embeds: options?.embeds || [],
-        channelKey: options?.channelKey,
+        channelId: options?.channelKey, // Neynar SDK usa channelId
         parent: options?.parent,
       }
     )
