@@ -22,7 +22,8 @@
     "db:migrate": "pnpm --filter=database prisma migrate dev",
     "db:studio": "pnpm --filter=database prisma studio",
     "db:generate": "pnpm --filter=database prisma generate",
-    "db:push": "pnpm --filter=database prisma db push"
+    "db:push": "pnpm --filter=database prisma db push",
+    "test:cast": "pnpm --filter=database test:cast"
   },
   "dependencies": {
     "turbo": "^1.12.4",
