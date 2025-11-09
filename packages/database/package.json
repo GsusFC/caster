@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@farcaster-scheduler/types": "workspace:*",
+    "@types/node": "^20",
     "prisma": "^5.9.1",
     "typescript": "^5.3.3"
   }

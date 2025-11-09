@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@farcaster-scheduler/types": "workspace:*",
+    "@types/node": "^20",
     "typescript": "^5.3.3"
   }
 }
