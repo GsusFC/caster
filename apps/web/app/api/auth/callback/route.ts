@@ -7,6 +7,12 @@ export const runtime = 'nodejs'
 export async function GET(request: NextRequest) {
   console.log('=== SIWN Callback Received ===')
   console.log('Full URL:', request.url)
+  console.log('Environment check:', {
+    hasDatabase: !!process.env.DATABASE_URL,
+    hasSecret: !!process.env.NEXTAUTH_SECRET,
+    hasAllowedFids: !!process.env.ALLOWED_FIDS,
+    hasNeynarKey: !!process.env.NEYNAR_API_KEY,
+  })
 
   const searchParams = request.nextUrl.searchParams
 
@@ -88,6 +94,8 @@ export async function GET(request: NextRequest) {
 
       // If Neynar API fails, create a demo user
       console.log('Creating demo user instead...')
+      console.log('About to upsert user with FID:', fid)
+
       const demoUser = await prisma.user.upsert({
         where: { fid: fid },
         update: {
@@ -104,6 +112,8 @@ export async function GET(request: NextRequest) {
           signerUuid: signerUuid,
         },
       })
+
+      console.log('Demo user created/updated:', demoUser.id)
 
       // Set session cookie with demo user
       await setSessionCookie({
@@ -164,8 +174,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, user: user })
   } catch (error) {
     console.error('OAuth callback error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+    })
+
     return NextResponse.json(
-      { success: false, error: 'authentication_failed' },
+      {
+        success: false,
+        error: 'authentication_failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     )
   }
