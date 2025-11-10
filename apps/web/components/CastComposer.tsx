@@ -33,7 +33,14 @@ export function CastComposer() {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to create cast')
+        console.error('Failed to create cast:', data)
+
+        let errorMessage = data.error || 'Failed to create cast'
+        if (data.details) {
+          errorMessage += ` (Scheduled: ${new Date(data.details.scheduledTime).toLocaleString()}, Current: ${new Date(data.details.currentTime).toLocaleString()})`
+        }
+
+        throw new Error(errorMessage)
       }
 
       // Reset form

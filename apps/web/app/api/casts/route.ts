@@ -75,8 +75,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { content, scheduledTime, priority = 'NORMAL' } = body
 
+    console.log('Creating cast:', { content: content?.substring(0, 50), scheduledTime, priority })
+
     // Validate input
     if (!content || !scheduledTime) {
+      console.error('Missing required fields:', { hasContent: !!content, hasScheduledTime: !!scheduledTime })
       return NextResponse.json(
         { error: 'Content and scheduledTime are required' },
         { status: 400 }
@@ -84,6 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (content.length > 320) {
+      console.error('Content too long:', content.length)
       return NextResponse.json(
         { error: 'Content must be 320 characters or less' },
         { status: 400 }
@@ -91,9 +95,24 @@ export async function POST(request: NextRequest) {
     }
 
     const scheduledDate = new Date(scheduledTime)
-    if (scheduledDate < new Date()) {
+    const now = new Date()
+
+    console.log('Time comparison:', {
+      scheduledDate: scheduledDate.toISOString(),
+      now: now.toISOString(),
+      isPast: scheduledDate < now,
+      diffMinutes: (scheduledDate.getTime() - now.getTime()) / 1000 / 60
+    })
+
+    if (scheduledDate < now) {
       return NextResponse.json(
-        { error: 'Scheduled time must be in the future' },
+        {
+          error: 'Scheduled time must be in the future',
+          details: {
+            scheduledTime: scheduledDate.toISOString(),
+            currentTime: now.toISOString()
+          }
+        },
         { status: 400 }
       )
     }
