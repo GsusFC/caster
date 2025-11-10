@@ -2,9 +2,38 @@
 
 import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function Home() {
-  const { user, loading, signIn, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
+
+  useEffect(() => {
+    // Define global callback for SIWN
+    ;(window as any).onSignInSuccess = async (data: {
+      fid: number
+      signer_uuid: string
+    }) => {
+      console.log('SIWN success:', data)
+
+      try {
+        // Send to our callback endpoint to create session
+        const response = await fetch(
+          `/api/auth/callback?fid=${data.fid}&signer_uuid=${data.signer_uuid}`
+        )
+
+        if (response.ok) {
+          // Redirect to dashboard
+          window.location.href = '/dashboard'
+        } else {
+          console.error('Failed to create session')
+          alert('Authentication failed. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error creating session:', error)
+        alert('Authentication failed. Please try again.')
+      }
+    }
+  }, [])
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-24">
@@ -40,12 +69,12 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
-            <button
-              onClick={signIn}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-            >
-              Sign In with Farcaster
-            </button>
+            <div
+              className="neynar_signin"
+              data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
+              data-success-callback="onSignInSuccess"
+              data-theme="light"
+            ></div>
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors">
               Learn More
             </button>
