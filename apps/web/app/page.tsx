@@ -4,6 +4,9 @@ import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
 import { NeynarAuthButton } from '@neynar/react'
 
+// Force dynamic rendering to avoid SSG issues with Neynar provider
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   const { user, loading, signOut } = useAuth()
 

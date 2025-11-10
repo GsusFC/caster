@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { CastComposer } from '@/components/CastComposer'
 import { CastList } from '@/components/CastList'
 
+// Force dynamic rendering to avoid SSG issues with Neynar provider
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   const { user, signOut } = useAuth()
 
