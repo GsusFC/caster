@@ -1,10 +1,10 @@
 'use client'
 
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
 
 export default function Home() {
-  const { data: session, status } = useSession()
+  const { user, loading, signIn, signOut } = useAuth()
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-24">
@@ -16,12 +16,12 @@ export default function Home() {
           Schedule and manage your Farcaster casts like a pro
         </p>
 
-        {status === 'loading' ? (
+        {loading ? (
           <p className="text-gray-500">Loading...</p>
-        ) : session ? (
+        ) : user ? (
           <div className="space-y-4">
             <p className="text-lg text-gray-700">
-              Welcome, <span className="font-semibold">{session.user?.name}</span>!
+              Welcome, <span className="font-semibold">{user.displayName}</span>!
             </p>
             <div className="flex gap-4 justify-center">
               <Link
@@ -31,7 +31,7 @@ export default function Home() {
                 Go to Dashboard
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={signOut}
                 className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors"
               >
                 Sign Out
@@ -41,7 +41,7 @@ export default function Home() {
         ) : (
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => signIn('farcaster')}
+              onClick={signIn}
               className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
             >
               Sign In with Farcaster
@@ -59,14 +59,14 @@ export default function Home() {
               Plan your content ahead and publish automatically at the perfect time
             </p>
           </div>
-          
+
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-2">🧵 Thread Support</h3>
             <p className="text-gray-600">
               Create and schedule entire threads with ease
             </p>
           </div>
-          
+
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-2">📊 Analytics</h3>
             <p className="text-gray-600">

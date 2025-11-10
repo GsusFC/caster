@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/auth'
 import { prisma } from '@farcaster-scheduler/database'
 
 // Force Node.js runtime for Prisma
@@ -7,18 +7,18 @@ export const runtime = 'nodejs'
 
 // DELETE /api/casts/[id] - Delete a scheduled cast
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth()
+    const session = await getSessionFromRequest(request)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user's FID from session
-    const userFid = (session.user as any).fid
+    const userFid = session.user.fid
 
     if (!userFid) {
       return NextResponse.json({ error: 'User FID not found' }, { status: 400 })

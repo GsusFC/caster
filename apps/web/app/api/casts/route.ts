@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/auth'
 import { prisma } from '@farcaster-scheduler/database'
 
 // Force Node.js runtime for Prisma
 export const runtime = 'nodejs'
 
 // GET /api/casts - List all casts for the authenticated user
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    const session = await getSessionFromRequest(request)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user's FID from session
-    const userFid = (session.user as any).fid
+    const userFid = session.user.fid
 
     if (!userFid) {
       return NextResponse.json({ error: 'User FID not found' }, { status: 400 })
@@ -49,14 +49,14 @@ export async function GET(_request: NextRequest) {
 // POST /api/casts - Create a new scheduled cast
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const session = await getSessionFromRequest(request)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user's FID from session
-    const userFid = (session.user as any).fid
+    const userFid = session.user.fid
 
     if (!userFid) {
       return NextResponse.json({ error: 'User FID not found' }, { status: 400 })
