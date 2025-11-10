@@ -4,7 +4,7 @@ services:
     name: farcaster-scheduler-worker
     env: node
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: |
       corepack prepare pnpm@8.15.0 --activate
       export PATH="$HOME/.node/corepack/pnpm/8.15.0/bin:$PATH"
@@ -30,5 +30,5 @@ databases:
     databaseName: farcaster_scheduler
     user: farcaster_user
     region: oregon
-    plan: starter
+    plan: free
     ipAllowList: []
