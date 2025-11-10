@@ -2,10 +2,12 @@
 
 import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import Script from 'next/script'
 
 export default function Home() {
   const { user, loading, signOut } = useAuth()
+  const [siwnLoaded, setSiwnLoaded] = useState(false)
 
   useEffect(() => {
     // Define global callback for SIWN
@@ -36,8 +38,17 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-24">
-      <div className="max-w-3xl w-full text-center">
+    <>
+      <Script
+        src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('SIWN script loaded')
+          setSiwnLoaded(true)
+        }}
+      />
+      <main className="min-h-screen flex flex-col items-center justify-center p-24">
+        <div className="max-w-3xl w-full text-center">
         <h1 className="text-6xl font-bold text-gray-900 mb-4">
           Farcaster Scheduler
         </h1>
@@ -69,12 +80,18 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
-            <div
-              className="neynar_signin"
-              data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
-              data-success-callback="onSignInSuccess"
-              data-theme="light"
-            ></div>
+            {!siwnLoaded ? (
+              <div className="bg-purple-600 text-white font-semibold py-3 px-8 rounded-lg">
+                Loading...
+              </div>
+            ) : (
+              <div
+                className="neynar_signin"
+                data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
+                data-success-callback="onSignInSuccess"
+                data-theme="light"
+              ></div>
+            )}
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors">
               Learn More
             </button>
@@ -105,5 +122,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </>
   )
 }
