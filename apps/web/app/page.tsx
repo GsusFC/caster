@@ -80,18 +80,19 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
-            {!siwnLoaded ? (
-              <div className="bg-purple-600 text-white font-semibold py-3 px-8 rounded-lg">
-                Loading...
-              </div>
-            ) : (
-              <div
-                className="neynar_signin"
-                data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
-                data-success-callback="onSignInSuccess"
-                data-theme="light"
-              ></div>
-            )}
+            <div
+              className="neynar_signin"
+              data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
+              data-success-callback="onSignInSuccess"
+              data-theme="light"
+            >
+              {/* SIWN script will replace this with button */}
+              {!siwnLoaded && (
+                <div className="bg-purple-600 text-white font-semibold py-3 px-8 rounded-lg">
+                  Loading...
+                </div>
+              )}
+            </div>
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors">
               Learn More
             </button>
