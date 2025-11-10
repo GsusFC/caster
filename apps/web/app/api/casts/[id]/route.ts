@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@farcaster-scheduler/database'
 
+// Force Node.js runtime for Prisma
+export const runtime = 'nodejs'
+
 // DELETE /api/casts/[id] - Delete a scheduled cast
 export async function DELETE(
   _request: NextRequest,

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@farcaster-scheduler/database'
 
+// Force Node.js runtime for Prisma
+export const runtime = 'nodejs'
+
 // GET /api/casts - List all casts for the authenticated user
 export async function GET(_request: NextRequest) {
   try {
