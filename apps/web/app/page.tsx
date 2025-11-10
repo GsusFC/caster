@@ -2,10 +2,7 @@
 
 import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
-import { NeynarAuthButton } from '@neynar/react'
-
-// Force dynamic rendering to avoid SSG issues with Neynar provider
-export const dynamic = 'force-dynamic'
+import { SimpleAuthButton } from '@/components/SimpleAuthButton'
 
 export default function Home() {
   const { user, loading, signOut } = useAuth()
@@ -44,7 +41,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex gap-4 justify-center items-center">
-            <NeynarAuthButton label="Sign In with Farcaster" />
+            <SimpleAuthButton />
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors">
               Learn More
             </button>
