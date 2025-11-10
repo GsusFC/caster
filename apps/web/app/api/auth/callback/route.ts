@@ -4,26 +4,15 @@ import { setSessionCookie } from '@/lib/auth'
 
 export const runtime = 'nodejs'
 
-interface NeynarTokenResponse {
-  access_token: string
-  token_type: string
-  expires_in: number
-}
-
-interface NeynarUserResponse {
-  fid: number
-  username: string
-  display_name: string
-  pfp_url: string
-  signer_uuid: string
-}
-
 export async function GET(request: NextRequest) {
-  console.log('=== OAuth Callback Received ===')
+  console.log('=== SIWN Callback Received ===')
   console.log('Full URL:', request.url)
 
   const searchParams = request.nextUrl.searchParams
-  const code = searchParams.get('code')
+
+  // SIWN returns fid and signer_uuid directly
+  const fidStr = searchParams.get('fid')
+  const signerUuid = searchParams.get('signer_uuid')
   const error = searchParams.get('error')
   const errorDescription = searchParams.get('error_description')
 
@@ -35,72 +24,76 @@ export async function GET(request: NextRequest) {
   console.log('All query params:', JSON.stringify(allParams, null, 2))
 
   if (error) {
-    console.error('OAuth error received:', error, errorDescription)
+    console.error('SIWN error received:', error, errorDescription)
     return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/?error=${error}`)
   }
 
-  if (!code) {
-    console.error('No code parameter received')
+  if (!fidStr || !signerUuid) {
+    console.error('Missing fid or signer_uuid in callback')
     return NextResponse.redirect(
-      `${process.env.NEXTAUTH_URL}/?error=missing_code`
+      `${process.env.NEXTAUTH_URL}/?error=missing_parameters`
     )
   }
 
-  console.log('Authorization code received, exchanging for token...')
+  const fid = parseInt(fidStr, 10)
+  if (isNaN(fid)) {
+    console.error('Invalid fid received:', fidStr)
+    return NextResponse.redirect(
+      `${process.env.NEXTAUTH_URL}/?error=invalid_fid`
+    )
+  }
+
+  console.log('SIWN callback - FID:', fid, 'Signer UUID:', signerUuid)
 
   try {
-    // Exchange code for access token
-    const tokenResponse = await fetch('https://app.neynar.com/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: process.env.NEYNAR_CLIENT_ID,
-        client_secret: process.env.NEYNAR_API_KEY, // Using API key as client secret
-        code,
-        grant_type: 'authorization_code',
-        redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback`,
-      }),
-    })
-
-    if (!tokenResponse.ok) {
-      throw new Error('Failed to exchange code for token')
-    }
-
-    const tokenData: NeynarTokenResponse = await tokenResponse.json()
-
-    // Get user info from Neynar
-    const userResponse = await fetch('https://api.neynar.com/v2/farcaster/user/me', {
-      headers: {
-        Authorization: `Bearer ${tokenData.access_token}`,
-        'x-api-key': process.env.NEYNAR_API_KEY!,
-      },
-    })
+    // Get user info from Neynar using FID
+    console.log('Fetching user info for FID:', fid)
+    const userResponse = await fetch(
+      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
+      {
+        headers: {
+          'api_key': process.env.NEYNAR_API_KEY!,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
 
     if (!userResponse.ok) {
-      throw new Error('Failed to fetch user info')
+      const errorText = await userResponse.text()
+      console.error('Failed to fetch user info:', userResponse.status, errorText)
+      throw new Error('Failed to fetch user info from Neynar')
     }
 
-    const userData: NeynarUserResponse = await userResponse.json()
+    const userData = await userResponse.json()
+    console.log('User data received:', JSON.stringify(userData, null, 2))
+
+    // Extract user info from the bulk response
+    const users = userData.users
+    if (!users || users.length === 0) {
+      throw new Error('No user data returned from Neynar')
+    }
+
+    const neynarUser = users[0]
 
     // Save or update user in database
+    console.log('Saving user to database...')
     const user = await prisma.user.upsert({
-      where: { fid: userData.fid },
+      where: { fid: fid },
       update: {
-        username: userData.username,
-        displayName: userData.display_name,
-        pfpUrl: userData.pfp_url,
-        signerUuid: userData.signer_uuid,
+        username: neynarUser.username,
+        displayName: neynarUser.display_name || null,
+        pfpUrl: neynarUser.pfp_url || null,
+        signerUuid: signerUuid,
       },
       create: {
-        fid: userData.fid,
-        username: userData.username,
-        displayName: userData.display_name,
-        pfpUrl: userData.pfp_url,
-        signerUuid: userData.signer_uuid,
+        fid: fid,
+        username: neynarUser.username,
+        displayName: neynarUser.display_name || null,
+        pfpUrl: neynarUser.pfp_url || null,
+        signerUuid: signerUuid,
       },
     })
+    console.log('User saved:', user.id)
 
     // Set session cookie
     await setSessionCookie({
