@@ -25,21 +25,26 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error('SIWN error received:', error, errorDescription)
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/?error=${error}`)
+    return NextResponse.json(
+      { success: false, error: error, description: errorDescription },
+      { status: 400 }
+    )
   }
 
   if (!fidStr || !signerUuid) {
     console.error('Missing fid or signer_uuid in callback')
-    return NextResponse.redirect(
-      `${process.env.NEXTAUTH_URL}/?error=missing_parameters`
+    return NextResponse.json(
+      { success: false, error: 'missing_parameters' },
+      { status: 400 }
     )
   }
 
   const fid = parseInt(fidStr, 10)
   if (isNaN(fid)) {
     console.error('Invalid fid received:', fidStr)
-    return NextResponse.redirect(
-      `${process.env.NEXTAUTH_URL}/?error=invalid_fid`
+    return NextResponse.json(
+      { success: false, error: 'invalid_fid' },
+      { status: 400 }
     )
   }
 
@@ -92,7 +97,7 @@ export async function GET(request: NextRequest) {
       })
 
       console.log('Demo user session created successfully')
-      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard`)
+      return NextResponse.json({ success: true, user: demoUser })
     }
 
     const userData = await userResponse.json()
@@ -136,12 +141,13 @@ export async function GET(request: NextRequest) {
       signerUuid: user.signerUuid,
     })
 
-    // Redirect to dashboard
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard`)
+    // Return success
+    return NextResponse.json({ success: true, user: user })
   } catch (error) {
     console.error('OAuth callback error:', error)
-    return NextResponse.redirect(
-      `${process.env.NEXTAUTH_URL}/?error=authentication_failed`
+    return NextResponse.json(
+      { success: false, error: 'authentication_failed' },
+      { status: 500 }
     )
   }
 }

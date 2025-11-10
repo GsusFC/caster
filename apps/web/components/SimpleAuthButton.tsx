@@ -26,14 +26,18 @@ export function SimpleAuthButton() {
         `/api/auth/callback?fid=${fid}&signer_uuid=${mockSignerUuid}`
       )
 
-      if (response.ok) {
+      const data = await response.json()
+
+      if (data.success) {
+        // Session created successfully, redirect to dashboard
         window.location.href = '/dashboard'
       } else {
-        alert('Authentication failed. Please try again.')
+        console.error('Authentication failed:', data.error)
+        alert(`Authentication failed: ${data.error || 'Unknown error'}. Please try again.`)
       }
     } catch (error) {
       console.error('Auth error:', error)
-      alert('Authentication failed. Please try again.')
+      alert('Network error. Please check your connection and try again.')
     } finally {
       setLoading(false)
     }
