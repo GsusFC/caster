@@ -19,19 +19,34 @@ interface NeynarUserResponse {
 }
 
 export async function GET(request: NextRequest) {
+  console.log('=== OAuth Callback Received ===')
+  console.log('Full URL:', request.url)
+
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
+
+  // Log all query parameters
+  const allParams: Record<string, string> = {}
+  searchParams.forEach((value, key) => {
+    allParams[key] = value
+  })
+  console.log('All query params:', JSON.stringify(allParams, null, 2))
 
   if (error) {
+    console.error('OAuth error received:', error, errorDescription)
     return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/?error=${error}`)
   }
 
   if (!code) {
+    console.error('No code parameter received')
     return NextResponse.redirect(
       `${process.env.NEXTAUTH_URL}/?error=missing_code`
     )
   }
+
+  console.log('Authorization code received, exchanging for token...')
 
   try {
     // Exchange code for access token
