@@ -13,7 +13,7 @@ export interface SessionUser {
   id: string
   fid: number
   username: string
-  displayName: string
+  displayName: string | null
   pfpUrl?: string
   signerUuid: string
 }
