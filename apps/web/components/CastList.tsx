@@ -22,13 +22,19 @@ export function CastList() {
 
   const fetchCasts = async () => {
     try {
-      const response = await fetch('/api/casts')
+      setIsLoading(true)
+      const response = await fetch('/api/casts', {
+        cache: 'no-store' // Prevent caching
+      })
       if (!response.ok) {
         throw new Error('Failed to fetch casts')
       }
       const data = await response.json()
+      console.log('Fetched casts from API:', data.length, 'casts')
+      console.log('Casts data:', data)
       setCasts(data)
     } catch (err) {
+      console.error('Error fetching casts:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsLoading(false)
@@ -135,8 +141,15 @@ export function CastList() {
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">Scheduled Casts</h2>
+        <button
+          onClick={fetchCasts}
+          disabled={isLoading}
+          className="text-sm text-purple-600 hover:text-purple-800 disabled:text-gray-400 transition-colors"
+        >
+          🔄 Refresh
+        </button>
       </div>
 
       <div className="divide-y divide-gray-200">
