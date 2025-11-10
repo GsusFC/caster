@@ -33,7 +33,13 @@ export function SimpleAuthButton() {
         window.location.href = '/dashboard'
       } else {
         console.error('Authentication failed:', data.error)
-        alert(`Authentication failed: ${data.error || 'Unknown error'}. Please try again.`)
+
+        // Show specific message for unauthorized FID
+        if (data.error === 'unauthorized_fid') {
+          alert('This Farcaster ID is not authorized to access this application.')
+        } else {
+          alert(`Authentication failed: ${data.message || data.error || 'Unknown error'}. Please try again.`)
+        }
       }
     } catch (error) {
       console.error('Auth error:', error)

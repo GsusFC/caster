@@ -48,6 +48,16 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // Check if FID is in allowed list
+  const allowedFids = process.env.ALLOWED_FIDS?.split(',').map(f => parseInt(f.trim(), 10)) || []
+  if (allowedFids.length > 0 && !allowedFids.includes(fid)) {
+    console.error('FID not in allowed list:', fid)
+    return NextResponse.json(
+      { success: false, error: 'unauthorized_fid', message: 'This FID is not authorized to access this application' },
+      { status: 403 }
+    )
+  }
+
   console.log('SIWN callback - FID:', fid, 'Signer UUID:', signerUuid)
 
   try {
