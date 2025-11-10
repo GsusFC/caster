@@ -61,21 +61,30 @@ export async function GET(request: NextRequest) {
   console.log('SIWN callback - FID:', fid, 'Signer UUID:', signerUuid)
 
   try {
-    // Get user info from Neynar using FID
-    console.log('Fetching user info for FID:', fid)
-    const userResponse = await fetch(
-      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
-      {
-        headers: {
-          'api_key': process.env.NEYNAR_API_KEY!,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    // Get user info from Neynar using FID (skip if no API key)
+    const neynarApiKey = process.env.NEYNAR_API_KEY
+    let userResponse = null
 
-    if (!userResponse.ok) {
-      const errorText = await userResponse.text()
-      console.error('Failed to fetch user info:', userResponse.status, errorText)
+    if (neynarApiKey) {
+      console.log('Fetching user info for FID:', fid)
+      userResponse = await fetch(
+        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
+        {
+          headers: {
+            'api_key': neynarApiKey,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    } else {
+      console.log('NEYNAR_API_KEY not set, skipping API call')
+    }
+
+    if (!userResponse || !userResponse.ok) {
+      if (userResponse) {
+        const errorText = await userResponse.text()
+        console.error('Failed to fetch user info:', userResponse.status, errorText)
+      }
 
       // If Neynar API fails, create a demo user
       console.log('Creating demo user instead...')
