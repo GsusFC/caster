@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User FID not found' }, { status: 400 })
     }
 
+    // Ensure database connection
+    await prisma.$connect()
+
     // Find user in database
     const user = await prisma.user.findUnique({
       where: { fid: userFid },
@@ -36,6 +39,8 @@ export async function GET(request: NextRequest) {
       orderBy: { scheduledTime: 'asc' },
     })
 
+    console.log(`Fetched ${casts.length} casts for user ${user.id}`)
+
     return NextResponse.json(casts)
   } catch (error) {
     console.error('Error fetching casts:', error)
@@ -43,6 +48,9 @@ export async function GET(request: NextRequest) {
       { error: 'Failed to fetch casts' },
       { status: 500 }
     )
+  } finally {
+    // Disconnect Prisma in serverless environment
+    await prisma.$disconnect()
   }
 }
 
