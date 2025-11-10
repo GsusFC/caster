@@ -1,6 +1,7 @@
 'use client'
 
 import { useSession, signIn, signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function Home() {
   const { data: session, status } = useSession()
@@ -23,9 +24,15 @@ export default function Home() {
               Welcome, <span className="font-semibold">{session.user?.name}</span>!
             </p>
             <div className="flex gap-4 justify-center">
+              <Link
+                href="/dashboard"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+              >
+                Go to Dashboard
+              </Link>
               <button
                 onClick={() => signOut()}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+                className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors"
               >
                 Sign Out
               </button>
