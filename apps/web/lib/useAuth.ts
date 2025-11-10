@@ -36,6 +36,8 @@ export function useAuth() {
   }
 
   async function signIn() {
+    console.log('signIn function called')
+    console.log('Redirecting to:', '/api/auth/signin')
     window.location.href = '/api/auth/signin'
   }
 
