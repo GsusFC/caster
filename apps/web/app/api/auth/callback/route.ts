@@ -3,6 +3,17 @@ import { prisma } from '@farcaster-scheduler/database'
 import { setSessionCookie } from '@/lib/auth'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10 // Serverless function timeout in seconds
+
+// Helper to ensure Prisma connection
+async function ensurePrismaConnection() {
+  try {
+    await prisma.$connect()
+  } catch (error) {
+    console.error('Failed to connect to database:', error)
+    throw error
+  }
+}
 
 export async function GET(request: NextRequest) {
   console.log('=== SIWN Callback Received ===')
@@ -96,6 +107,9 @@ export async function GET(request: NextRequest) {
       console.log('Creating demo user instead...')
       console.log('About to upsert user with FID:', fid)
 
+      // Ensure database connection
+      await ensurePrismaConnection()
+
       const demoUser = await prisma.user.upsert({
         where: { fid: fid },
         update: {
@@ -142,6 +156,10 @@ export async function GET(request: NextRequest) {
 
     // Save or update user in database
     console.log('Saving user to database...')
+
+    // Ensure database connection
+    await ensurePrismaConnection()
+
     const user = await prisma.user.upsert({
       where: { fid: fid },
       update: {
@@ -188,5 +206,8 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     )
+  } finally {
+    // Disconnect Prisma in serverless environment
+    await prisma.$disconnect()
   }
 }
