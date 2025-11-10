@@ -37,8 +37,47 @@ export function useAuth() {
 
   async function signIn() {
     console.log('signIn function called')
-    console.log('Redirecting to:', '/api/auth/signin')
-    window.location.href = '/api/auth/signin'
+
+    // Check if SIWN script is loaded
+    if (typeof (window as any).NeynarSIWN === 'undefined') {
+      console.error('SIWN script not loaded yet, falling back to server-side flow')
+      window.location.href = '/api/auth/signin'
+      return
+    }
+
+    try {
+      // Use SIWN popup (free tier)
+      console.log('Using SIWN popup...')
+      const NeynarSIWN = (window as any).NeynarSIWN
+
+      NeynarSIWN({
+        clientId: process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID || 'a8a5d46f-cda7-49da-90da-0ebdb74880fe',
+        onSuccess: async (data: { fid: number; signer_uuid: string }) => {
+          console.log('SIWN success:', data)
+
+          // Send to our callback endpoint to create session
+          const response = await fetch(
+            `/api/auth/callback?fid=${data.fid}&signer_uuid=${data.signer_uuid}`
+          )
+
+          if (response.ok) {
+            // Redirect to dashboard
+            window.location.href = '/dashboard'
+          } else {
+            console.error('Failed to create session')
+            alert('Authentication failed. Please try again.')
+          }
+        },
+        onError: (error: any) => {
+          console.error('SIWN error:', error)
+          alert('Authentication failed. Please try again.')
+        },
+      })
+    } catch (error) {
+      console.error('Error initializing SIWN:', error)
+      // Fallback to server-side flow
+      window.location.href = '/api/auth/signin'
+    }
   }
 
   async function signOut() {
