@@ -1,12 +1,12 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
 import { CastComposer } from '@/components/CastComposer'
 import { CastList } from '@/components/CastList'
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
+  const { user, signOut } = useAuth()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,9 +23,9 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{session?.user?.name}</span>
+              <span className="text-sm text-gray-600">{user?.displayName}</span>
               <button
-                onClick={() => signOut()}
+                onClick={signOut}
                 className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Sign Out
@@ -40,7 +40,7 @@ export default function DashboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-2">
-            Welcome back, <span className="font-semibold">{session?.user?.name}</span>
+            Welcome back, <span className="font-semibold">{user?.displayName}</span>
           </p>
         </div>
 

@@ -1,14 +1,54 @@
 'use client'
 
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/useAuth'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import Script from 'next/script'
 
 export default function Home() {
-  const { data: session, status } = useSession()
+  const { user, loading, signOut } = useAuth()
+  const [siwnLoaded, setSiwnLoaded] = useState(false)
+
+  useEffect(() => {
+    // Define global callback for SIWN
+    ;(window as any).onSignInSuccess = async (data: {
+      fid: number
+      signer_uuid: string
+    }) => {
+      console.log('SIWN success:', data)
+
+      try {
+        // Send to our callback endpoint to create session
+        const response = await fetch(
+          `/api/auth/callback?fid=${data.fid}&signer_uuid=${data.signer_uuid}`
+        )
+
+        if (response.ok) {
+          // Redirect to dashboard
+          window.location.href = '/dashboard'
+        } else {
+          console.error('Failed to create session')
+          alert('Authentication failed. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error creating session:', error)
+        alert('Authentication failed. Please try again.')
+      }
+    }
+  }, [])
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-24">
-      <div className="max-w-3xl w-full text-center">
+    <>
+      <Script
+        src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('SIWN script loaded')
+          setSiwnLoaded(true)
+        }}
+      />
+      <main className="min-h-screen flex flex-col items-center justify-center p-24">
+        <div className="max-w-3xl w-full text-center">
         <h1 className="text-6xl font-bold text-gray-900 mb-4">
           Farcaster Scheduler
         </h1>
@@ -16,12 +56,12 @@ export default function Home() {
           Schedule and manage your Farcaster casts like a pro
         </p>
 
-        {status === 'loading' ? (
+        {loading ? (
           <p className="text-gray-500">Loading...</p>
-        ) : session ? (
+        ) : user ? (
           <div className="space-y-4">
             <p className="text-lg text-gray-700">
-              Welcome, <span className="font-semibold">{session.user?.name}</span>!
+              Welcome, <span className="font-semibold">{user.displayName}</span>!
             </p>
             <div className="flex gap-4 justify-center">
               <Link
@@ -31,7 +71,7 @@ export default function Home() {
                 Go to Dashboard
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={signOut}
                 className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors"
               >
                 Sign Out
@@ -40,12 +80,19 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => signIn('farcaster')}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+            <div
+              className="neynar_signin"
+              data-client_id="a8a5d46f-cda7-49da-90da-0ebdb74880fe"
+              data-success-callback="onSignInSuccess"
+              data-theme="light"
             >
-              Sign In with Farcaster
-            </button>
+              {/* SIWN script will replace this with button */}
+              {!siwnLoaded && (
+                <div className="bg-purple-600 text-white font-semibold py-3 px-8 rounded-lg">
+                  Loading...
+                </div>
+              )}
+            </div>
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-8 rounded-lg border-2 border-gray-200 transition-colors">
               Learn More
             </button>
@@ -59,14 +106,14 @@ export default function Home() {
               Plan your content ahead and publish automatically at the perfect time
             </p>
           </div>
-          
+
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-2">🧵 Thread Support</h3>
             <p className="text-gray-600">
               Create and schedule entire threads with ease
             </p>
           </div>
-          
+
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-2">📊 Analytics</h3>
             <p className="text-gray-600">
@@ -76,5 +123,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </>
   )
 }
