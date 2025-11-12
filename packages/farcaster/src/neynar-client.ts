@@ -38,7 +38,8 @@ export async function publishCast(
       cast: response,
     }
   } catch (error) {
-    console.error('Error publishing cast:', error)
+    // Log error detallado para debugging
+    console.error('Error publishing cast:', JSON.stringify(error, null, 2))
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
